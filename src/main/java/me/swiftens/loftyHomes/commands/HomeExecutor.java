@@ -31,7 +31,7 @@ public class HomeExecutor implements CommandExecutor {
 
         Location location = dataManager.retrieveHome(player.getUniqueId(), "home");
         if (location == null) {
-            player.sendMessage(ChatColor.RED + "This home is in an invalid world!");
+            player.sendMessage(ChatColor.RED + "Invalid home! Either it doesn't exist or it is in an invalid location.");
         } else {
             player.teleport(location);
         }
