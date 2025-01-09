@@ -1,8 +1,9 @@
 package me.swiftens.loftyHomes.data;
 
 import me.swiftens.loftyHomes.utils.DataAccess;
-import me.swiftens.loftyHomes.utils.LocationData;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
@@ -23,7 +24,12 @@ public class YamlDataManager implements DataManager {
         if (location.getWorld() == null) return false;
         DataAccess data = dataMap.computeIfAbsent(playerId, k -> new DataAccess(plugin, playerId));
 
-        data.getFile().set(name, LocationData.serialize(location));
+        data.getFile().set(name+".x", location.getX());
+        data.getFile().set(name+".y", location.getY());
+        data.getFile().set(name+".z", location.getZ());
+        data.getFile().set(name+".world", location.getWorld().getName());
+        data.getFile().set(name+".yaw", location.getYaw());
+        data.getFile().set(name+".pitch", location.getPitch());
         return true;
     }
 
@@ -31,11 +37,19 @@ public class YamlDataManager implements DataManager {
     @Override
     public Location retrieveHome(UUID playerId, String name) {
         DataAccess data = dataMap.computeIfAbsent(playerId, k -> new DataAccess(plugin, playerId));
+        ConfigurationSection home = data.getFile().getConfigurationSection(name);
+        if (home == null || home.getString("world") == null) {
+            return null;
+        }
 
-        LocationData locationData = data.getFile().getObject(name, LocationData.class);
-        if (locationData == null) return null;
-
-        return LocationData.deserialize(locationData);
+        return new Location(
+                Bukkit.getWorld(home.getString("world")),
+                home.getDouble("x"),
+                home.getDouble("y"),
+                home.getDouble("z"),
+                (float) home.getDouble("yaw"),
+                (float) home.getDouble("pitch")
+        );
     }
 
     @Override
