@@ -1,6 +1,59 @@
 name: LoftyHomes
-version: '1.0'
+version: $version
 main: me.swiftens.loftyHomes.LoftyHomes
 api-version: '1.18'
 authors: [ Swiftens ]
 description: A Simple Home Plugin for your players!
+commands:
+  sethome:
+    description: Set a home
+    aliases:
+      - newhome
+  home:
+    description: Go to home
+  delhome:
+    description: Remove the home
+    aliases:
+      - remhome
+      - rmhome
+  adminsethome:
+    description: Set a home
+    aliases:
+      - adminnewhome
+      - anewhome
+      - asethome
+  adminhome:
+    description: Go to home
+    aliases:
+      - ahome
+  admindelhome:
+    description: Remove the home
+    aliases:
+      - adminremhome
+      - adminrmhome
+      - aremhome
+      - armhome
+      - adelhome
+
+permissions:
+  loftyhomes.*:
+    default: op
+    children:
+      loftyhomes.sethome: true
+      loftyhomes.delhome: true
+      loftyhomes.home: true
+      loftyhomes.others.sethome: true
+      loftyhomes.others.delhome: true
+      loftyhomes.others.home: true
+  loftyhomes.sethome:
+    default: op
+  loftyhomes.delhome:
+    default: op
+  loftyhomes.home:
+    default: op
+  loftyhomes.others.sethome:
+    default: op
+  loftyhomes.others.delhome:
+    default: op
+  loftyhomes.others.home:
+    default: op

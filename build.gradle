@@ -1,5 +1,8 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id 'java'
+    id 'com.gradleup.shadow' version '8.3.5'
 }
 
 group = 'me.swiftens'
@@ -19,6 +22,8 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
+    // BStats
+    implementation('org.bstats:bstats-bukkit:3.0.2')
 }
 
 def targetJavaVersion = 17
@@ -37,6 +42,12 @@ tasks.withType(JavaCompile).configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release.set(targetJavaVersion)
     }
+}
+
+tasks.named('shadowJar', ShadowJar) {
+    archiveFileName.set("LoftyHomes-${project.version}.jar")
+
+    relocate("org.bstats", "me.swiftens.loftyHomes.bstats")
 }
 
 processResources {
