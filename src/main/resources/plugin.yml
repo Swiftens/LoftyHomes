@@ -1,0 +1,6 @@
+name: LoftyHomes
+version: '1.0'
+main: me.swiftens.loftyHomes.LoftyHomes
+api-version: '1.18'
+authors: [ Swiftens ]
+description: A Simple Home Plugin for your players!
