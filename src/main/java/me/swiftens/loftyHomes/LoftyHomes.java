@@ -1,8 +1,6 @@
 package me.swiftens.loftyHomes;
 
-import me.swiftens.loftyHomes.commands.DelHomeExecutor;
-import me.swiftens.loftyHomes.commands.HomeExecutor;
-import me.swiftens.loftyHomes.commands.SetHomeExecutor;
+import me.swiftens.loftyHomes.commands.*;
 import me.swiftens.loftyHomes.data.DataManager;
 import me.swiftens.loftyHomes.data.YamlDataManager;
 import org.bstats.bukkit.Metrics;
@@ -48,6 +46,9 @@ public final class LoftyHomes extends JavaPlugin {
         getCommand("sethome").setExecutor(new SetHomeExecutor(this));
         getCommand("home").setExecutor(new HomeExecutor(this));
         getCommand("delhome").setExecutor(new DelHomeExecutor(this));
+        getCommand("adminsethome").setExecutor(new AdminSetHomeExecutor(this));
+        getCommand("adminhome").setExecutor(new AdminHomeExecutor(this));
+        getCommand("admindelhome").setExecutor(new AdminDelHomeExecutor(this));
     }
 
 }
