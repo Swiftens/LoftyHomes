@@ -1,39 +1,26 @@
 package me.swiftens.loftyHomes.commands;
 
 import me.swiftens.loftyHomes.LoftyHomes;
-import me.swiftens.loftyHomes.data.DataManager;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class DelHomeExecutor implements CommandExecutor {
+import static me.swiftens.loftyHomes.utils.MessageUtils.sendMessage;
 
-    private final DataManager dataManager;
+public class DelHomeExecutor extends LoftyHomesCommandExecutor {
 
     public DelHomeExecutor(LoftyHomes loftyHomes) {
-        this.dataManager = loftyHomes.getDataManager();
+        super(loftyHomes, "loftyhomes.delhome", true);
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(ChatColor.RED + "This command is for players only!");
-            return true;
+    public void executeCommand(CommandSender sender, String[] args) {
+        String homeName = "home";
+        if (sender instanceof Player player) {
+            if (dataManager.deleteHome(player.getUniqueId(), homeName)) {
+                sendMessage(player, messages.getHomeDeleted(), homeName);
+            } else {
+                sendMessage(player, messages.getHomeDeleteUnsuccessful(), homeName);
+            }
         }
-
-        if (!player.hasPermission("loftyhomes.delhome")) {
-            player.sendMessage(ChatColor.RED + "You do not have permissions to run this command!");
-            return true;
-        }
-
-        if (dataManager.deleteHome(player.getUniqueId(), "home")) {
-            player.sendMessage(ChatColor.YELLOW + "Home deleted!");
-        } else {
-            player.sendMessage(ChatColor.RED + "Could not save your home, please try again!");
-        }
-
-        return true;
     }
 }

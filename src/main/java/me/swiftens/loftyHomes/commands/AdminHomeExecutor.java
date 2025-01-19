@@ -1,50 +1,44 @@
 package me.swiftens.loftyHomes.commands;
 
 import me.swiftens.loftyHomes.LoftyHomes;
-import me.swiftens.loftyHomes.data.DataManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class AdminHomeExecutor implements CommandExecutor {
+import static me.swiftens.loftyHomes.utils.MessageUtils.sendMessage;
 
-    private final DataManager dataManager;
+public class AdminHomeExecutor extends LoftyHomesCommandExecutor {
 
     public AdminHomeExecutor(LoftyHomes loftyHomes) {
-        this.dataManager = loftyHomes.getDataManager();
+        super(loftyHomes, "loftyhomes.others.home", true);
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(ChatColor.RED + "This command is for players only!");
-            return true;
-        }
-
-        if (!player.hasPermission("loftyhomes.others.home")) {
-            player.sendMessage(ChatColor.RED + "You do not have permissions to run this command!");
-            return true;
-        }
-
+    public void executeCommand(CommandSender sender, String[] args) {
         // Deprecated method, it is best to figure out a way to get players by usernames eventually
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(strings[0]);
-        if (!offlinePlayer.hasPlayedBefore()) {
-            player.sendMessage(ChatColor.RED + "This player does not exist!");
-            return true;
-        }
+        String homeName = "home";
 
-        Location location = dataManager.retrieveHome(offlinePlayer.getUniqueId(), "home");
-        if (location == null) {
-            player.sendMessage(ChatColor.RED + "Invalid home! Either it doesn't exist or it is in an invalid location.");
-        } else {
-            player.teleport(location);
-        }
+        if (sender instanceof Player player) {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[0]);
+            if (!offlinePlayer.hasPlayedBefore()) {
+                sendMessage(player, messages.getCommandPlayerDoesNotExist());
+                return;
+            }
 
-        return true;
+            String playerName = offlinePlayer.getName();
+            Location location = dataManager.retrieveHome(offlinePlayer.getUniqueId(), homeName);
+            if (location == null) {
+                sendMessage(sender, messages.getHomeTeleportOthersUnsuccessful(), homeName, playerName);
+            } else {
+                player.teleport(location);
+                sendMessage(sender, messages.getHomeTeleportOthers(), homeName, playerName);
+
+                if (offlinePlayer.isOnline() && offlinePlayer.getPlayer() != null) {
+                    sendMessage(offlinePlayer.getPlayer(), messages.getHomeTeleportOthersNotifyPlayer(), homeName, playerName);
+                }
+            }
+        }
     }
 }

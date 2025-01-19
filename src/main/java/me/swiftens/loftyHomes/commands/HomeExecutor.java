@@ -1,42 +1,30 @@
 package me.swiftens.loftyHomes.commands;
 
 import me.swiftens.loftyHomes.LoftyHomes;
-import me.swiftens.loftyHomes.data.DataManager;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class HomeExecutor implements CommandExecutor {
+import static me.swiftens.loftyHomes.utils.MessageUtils.sendMessage;
 
-    private final DataManager dataManager;
+public class HomeExecutor extends LoftyHomesCommandExecutor {
 
     public HomeExecutor(LoftyHomes loftyHomes) {
-        this.dataManager = loftyHomes.getDataManager();
+        super(loftyHomes, "loftyhomes.home", true);
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(ChatColor.RED + "This command is for players only!");
-            return true;
+    public void executeCommand(CommandSender sender, String[] args) {
+        if (sender instanceof Player player) {
+            String homeName = "home";
+            Location location = dataManager.retrieveHome(player.getUniqueId(), homeName);
+            if (location == null) {
+                sendMessage(sender, messages.getHomeTeleportUnsuccessful(), homeName);
+            } else {
+                player.teleport(location);
+                sendMessage(sender, messages.getHomeTeleport(), homeName);
+            }
         }
 
-        if (!player.hasPermission("loftyhomes.home")) {
-            player.sendMessage(ChatColor.RED + "You do not have permissions to run this command!");
-            return true;
-        }
-
-        Location location = dataManager.retrieveHome(player.getUniqueId(), "home");
-        if (location == null) {
-            player.sendMessage(ChatColor.RED + "Invalid home! Either it doesn't exist or it is in an invalid location.");
-        } else {
-            player.teleport(location);
-        }
-
-
-        return true;
     }
 }

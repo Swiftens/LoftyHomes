@@ -34,6 +34,12 @@ commands:
       - aremhome
       - armhome
       - adelhome
+  loftyhomesreload:
+    description: Reload config files
+    aliases:
+      - loftyhomereload
+      - homereload
+      - lhreload
 
 permissions:
   loftyhomes.*:
@@ -45,6 +51,7 @@ permissions:
       loftyhomes.others.sethome: true
       loftyhomes.others.delhome: true
       loftyhomes.others.home: true
+      loftyhomes.reload: true
   loftyhomes.sethome:
     default: op
   loftyhomes.delhome:
@@ -56,4 +63,6 @@ permissions:
   loftyhomes.others.delhome:
     default: op
   loftyhomes.others.home:
+    default: op
+  loftyhomes.reload:
     default: op

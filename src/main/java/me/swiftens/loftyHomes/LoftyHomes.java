@@ -1,20 +1,38 @@
 package me.swiftens.loftyHomes;
 
+import de.exlll.configlib.ConfigLib;
+import de.exlll.configlib.NameFormatters;
+import de.exlll.configlib.YamlConfigurationProperties;
+import de.exlll.configlib.YamlConfigurations;
+import lombok.Getter;
 import me.swiftens.loftyHomes.commands.*;
+import me.swiftens.loftyHomes.configs.MessageConfiguration;
 import me.swiftens.loftyHomes.data.DataManager;
 import me.swiftens.loftyHomes.data.YamlDataManager;
+import me.swiftens.loftyHomes.utils.MessageUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.io.File;
+import java.nio.file.Path;
+
 public final class LoftyHomes extends JavaPlugin {
 
+    private static final YamlConfigurationProperties PROPERTIES = ConfigLib.BUKKIT_DEFAULT_PROPERTIES.toBuilder()
+            .setNameFormatter(NameFormatters.LOWER_KEBAB_CASE)
+            .build();
+
     private BukkitTask saveTimer;
+    @Getter
     private DataManager dataManager;
+    @Getter
+    private MessageConfiguration messageConfiguration;
 
     @Override
     public void onEnable() {
+        reloadConfigs();
         this.dataManager = new YamlDataManager(this);
 
         registerCommands();
@@ -38,9 +56,6 @@ public final class LoftyHomes extends JavaPlugin {
         dataManager.saveData(true);
     }
 
-    public DataManager getDataManager() {
-        return this.dataManager;
-    }
 
     private void registerCommands() {
         getCommand("sethome").setExecutor(new SetHomeExecutor(this));
@@ -49,6 +64,18 @@ public final class LoftyHomes extends JavaPlugin {
         getCommand("adminsethome").setExecutor(new AdminSetHomeExecutor(this));
         getCommand("adminhome").setExecutor(new AdminHomeExecutor(this));
         getCommand("admindelhome").setExecutor(new AdminDelHomeExecutor(this));
+        getCommand("loftyhomesreload").setExecutor(new ReloadExecutor(this));
+    }
+
+    public void reloadConfigs() {
+        Path configPath = new File(getDataFolder(), "messages.yml").toPath();
+        messageConfiguration = YamlConfigurations.update(
+                configPath,
+                MessageConfiguration.class,
+                PROPERTIES
+        );
+        MessageUtils.setPrefix(messageConfiguration.getPrefix());
+
     }
 
 }
